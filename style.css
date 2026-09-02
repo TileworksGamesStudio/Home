@@ -1,62 +1,527 @@
+/* style.css */
+
+:root {
+  --bg-dark: #0b1f23;
+  --bg-teal: #14383e;
+  --bg-teal-light: #1c4b53;
+  --accent-gold: #d4a359;
+  --accent-gold-light: #fae0a2;
+  --accent-amber: #e76f51;
+  --card-bg: rgba(25, 58, 65, 0.55);
+  --card-border: rgba(212, 163, 89, 0.28);
+  --card-border-hover: rgba(250, 224, 162, 0.7);
+  --card-shadow: 0 12px 32px 0 rgba(0, 0, 0, 0.45);
+  --card-shadow-active: 0 4px 12px 0 rgba(0, 0, 0, 0.6);
+  --text-main: #fbf7ee;
+  --text-muted: #a6c0c5;
+  --font-display: 'Cinzel', serif;
+  --font-body: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html {
+  font-size: 16px;
+  background-color: var(--bg-dark);
+  scroll-behavior: smooth;
 }
 
 body {
   min-height: 100vh;
-  /* 'fixed' keeps the background locked in place while the grid scrolls over it */
-  background: url('background.svg') no-repeat center center fixed;
+  min-height: -webkit-fill-available;
+  font-family: var(--font-body);
+  color: var(--text-main);
+  background: 
+    radial-gradient(circle at 50% 15%, rgba(28, 75, 83, 0.85) 0%, rgba(11, 31, 35, 0.98) 75%),
+    url('background.svg') no-repeat center center fixed;
   background-size: cover;
-  font-family: system-ui, -apple-system, sans-serif;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
+  position: relative;
+  overflow-x: hidden;
+  padding: 24px 16px 40px;
 }
 
-/* Wrapper controls side borders and top spacing */
-.menu-wrapper {
-  width: 92%;           /* Takes up 92% of screen width (leaves 4% border on left & right) */
-  max-width: 500px;     /* Stops grid from getting too wide on large desktop screens */
-  padding-top: 140px;   /* Top offset space for header artwork/title */
-  padding-bottom: 50px; /* Bottom margin when fully scrolled */
+/* Ambient Lighting Effect */
+.ambient-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
 }
 
-/* Optional header area for text or logo overlays */
-.header-space {
-  text-align: center;
-  margin-bottom: 20px;
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  will-change: transform;
 }
 
-/* 2-Column Mobile Grid */
-.links-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Always exactly 2 columns */
-  gap: 16px;                             /* Space between the buttons */
-  width: 100%;
-  margin-top: 200px;
+.orb-1 {
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, var(--accent-gold) 0%, transparent 70%);
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: pulseOrb 8s infinite alternate ease-in-out;
 }
 
-/* 1:1 Square Button Styling */
-.menu-link {
+.orb-2 {
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, #0e5e6b 0%, transparent 70%);
+  bottom: 5%;
+  right: -50px;
+  opacity: 0.25;
+}
+
+@keyframes pulseOrb {
+  0% { transform: translateX(-50%) scale(1); opacity: 0.3; }
+  100% { transform: translateX(-50%) scale(1.15); opacity: 0.45; }
+}
+
+/* Audio Floating Button */
+.audio-controller {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 100;
+}
+
+.audio-btn {
   display: flex;
-  justify-content: center;
   align-items: center;
-  aspect-ratio: 1 / 1;      /* Forces a perfect 1:1 square ratio */
+  gap: 8px;
+  background: rgba(18, 48, 54, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 163, 89, 0.35);
+  color: var(--text-main);
+  padding: 8px 14px;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  transition: all 0.25s var(--ease-smooth);
+}
+
+.audio-btn:hover {
+  background: rgba(28, 75, 83, 0.9);
+  border-color: var(--accent-gold-light);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 163, 89, 0.25);
+}
+
+.audio-btn:active {
+  transform: scale(0.94);
+}
+
+.audio-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent-gold-light);
+}
+
+/* Equalizer Waveform Indicator */
+.equalizer-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2.5px;
+  width: 14px;
+  height: 12px;
+}
+
+.equalizer-bars .bar {
+  width: 2.5px;
+  height: 3px;
+  background-color: var(--accent-gold);
+  border-radius: 2px;
+  transition: height 0.2s ease;
+}
+
+.equalizer-bars.playing .bar {
+  animation: equalize 0.8s infinite alternate ease-in-out;
+}
+
+.equalizer-bars.playing .bar:nth-child(1) { animation-delay: 0.1s; height: 10px; }
+.equalizer-bars.playing .bar:nth-child(2) { animation-delay: 0.3s; height: 12px; }
+.equalizer-bars.playing .bar:nth-child(3) { animation-delay: 0.0s; height: 7px; }
+.equalizer-bars.playing .bar:nth-child(4) { animation-delay: 0.2s; height: 11px; }
+
+@keyframes equalize {
+  0% { height: 3px; }
+  50% { height: 12px; }
+  100% { height: 5px; }
+}
+
+/* Main Layout Wrapper */
+.menu-wrapper {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  border-radius: 16px;      /* Optional rounded corners */
-  transition: transform 0.15s ease;
-  -webkit-tap-highlight-color: transparent; /* Removes mobile tap blue box */
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
 }
 
-/* Touch feedback for mobile tap */
-.menu-link:active {
-  transform: scale(0.95);   /* Slight push-down animation when tapped */
+/* Header & Logo Component */
+.header-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 28px;
+  width: 100%;
 }
 
-.menu-link img {
+.logo-link {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  border-radius: 50%;
+  padding: 6px;
+  transition: transform 0.35s var(--ease-elastic);
+  cursor: pointer;
+}
+
+.logo-backdrop-glow {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212, 163, 89, 0.4) 0%, transparent 70%);
+  filter: blur(16px);
+  opacity: 0.7;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 0;
+}
+
+.logo-frame {
+  position: relative;
+  z-index: 1;
+  width: 175px;
+  height: 175px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(250, 224, 162, 0.2), rgba(11, 31, 35, 0.8));
+  padding: 4px;
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.5),
+    0 0 0 1.5px rgba(212, 163, 89, 0.5),
+    inset 0 1px 3px rgba(255, 255, 255, 0.4);
+  overflow: hidden;
+  transition: all 0.3s var(--ease-smooth);
+}
+
+.logo-img {
   width: 100%;
   height: 100%;
-  object-fit: contain;      /* Ensures SVG content fits neatly inside the 1:1 square */
+  object-fit: cover;
+  border-radius: 50%;
   display: block;
+  transform: scale(1.02);
+  transition: transform 0.4s var(--ease-smooth);
+}
+
+.logo-shine-layer {
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: linear-gradient(
+    45deg,
+    transparent 45%,
+    rgba(255, 255, 255, 0.25) 50%,
+    transparent 55%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  transition: transform 0.75s ease;
+}
+
+/* Logo Hover & Press States */
+.logo-link:hover .logo-frame {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 
+    0 16px 32px rgba(0, 0, 0, 0.6),
+    0 0 24px rgba(212, 163, 89, 0.6),
+    inset 0 1px 5px rgba(255, 255, 255, 0.6);
+}
+
+.logo-link:hover .logo-backdrop-glow {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.logo-link:hover .logo-shine-layer {
+  transform: translate(50%, 50%) rotate(25deg);
+}
+
+.logo-link:active {
+  transform: scale(0.92);
+}
+
+.logo-link:active .logo-frame {
+  transform: translateY(2px) scale(0.96);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.7), inset 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Studio Headings */
+.studio-title {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  margin-top: 14px;
+  background: linear-gradient(180deg, #ffffff 0%, var(--accent-gold-light) 65%, var(--accent-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 3px 12px rgba(0,0,0,0.6);
+}
+
+.studio-subtitle {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  color: var(--text-muted);
+  margin-top: 4px;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+/* Links Section */
+.links-section {
+  width: 100%;
+  margin-top: 6px;
+}
+
+/* 2-Column Responsive Grid */
+.links-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+/* 1:1 Square Premium Tile Link */
+.menu-link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  background: var(--card-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid var(--card-border);
+  border-radius: 22px;
+  padding: 12px;
+  text-decoration: none;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  cursor: pointer;
+  transform: translateZ(0);
+  transition: 
+    transform 0.3s var(--ease-elastic),
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background-color 0.25s ease;
+  will-change: transform, box-shadow;
+  animation: cardEntrance 0.6s var(--ease-smooth) backwards;
+}
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Internal Card Shimmer & Lighting Highlight */
+.card-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  background: radial-gradient(
+    800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.12),
+    transparent 40%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.menu-link:hover .card-shine {
+  opacity: 1;
+}
+
+/* Bevel Top Highlight Line */
+.menu-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  opacity: 0.7;
+}
+
+/* Image inside tile */
+.tile-image-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  transition: transform 0.35s var(--ease-elastic);
+}
+
+.tile-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+  transition: filter 0.3s ease, transform 0.3s var(--ease-smooth);
+}
+
+/* Hover and Active Micro-Interactions */
+.menu-link:hover {
+  border-color: var(--card-border-hover);
+  background: rgba(28, 75, 83, 0.7);
+  box-shadow: 
+    0 18px 36px 0 rgba(0, 0, 0, 0.5),
+    0 0 20px 0 rgba(212, 163, 89, 0.25);
+  transform: translateY(-5px) scale(1.02);
+}
+
+.menu-link:hover .tile-image-wrap {
+  transform: scale(1.06);
+}
+
+.menu-link:hover .tile-image-wrap img {
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.5)) brightness(1.04);
+}
+
+/* Tactile Physical Press Feel */
+.menu-link:active {
+  transform: translateY(3px) scale(0.92) !important;
+  border-color: var(--accent-gold);
+  background: rgba(15, 41, 46, 0.85);
+  box-shadow: var(--card-shadow-active), inset 0 2px 6px rgba(0, 0, 0, 0.6);
+  transition: transform 0.08s ease-out, box-shadow 0.08s ease-out;
+}
+
+.menu-link:active .tile-image-wrap {
+  transform: scale(0.94);
+}
+
+/* Ripple effect on click */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(250, 224, 162, 0.5) 0%, rgba(212, 163, 89, 0) 75%);
+  transform: scale(0);
+  animation: rippleAnimation 0.55s ease-out forwards;
+  pointer-events: none;
+  z-index: 5;
+}
+
+@keyframes rippleAnimation {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Loading Placeholder Skeleton */
+.tile-skeleton {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  border-radius: 22px;
+  background: linear-gradient(
+    110deg,
+    rgba(25, 58, 65, 0.4) 8%,
+    rgba(35, 78, 87, 0.6) 18%,
+    rgba(25, 58, 65, 0.4) 33%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes shimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+/* Footer Copyright */
+.footer-space {
+  margin-top: 36px;
+  text-align: center;
+  z-index: 1;
+}
+
+.copyright {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  opacity: 0.65;
+  letter-spacing: 0.04em;
+}
+
+/* Mobile Responsive Adaptations */
+@media (max-width: 380px) {
+  .logo-frame {
+    width: 145px;
+    height: 145px;
+  }
+  
+  .studio-title {
+    font-size: 1.25rem;
+  }
+
+  .links-grid {
+    gap: 12px;
+  }
+
+  .menu-link {
+    border-radius: 18px;
+    padding: 10px;
+  }
+}
+
+@media (min-width: 600px) {
+  .menu-wrapper {
+    max-width: 520px;
+    padding-top: 20px;
+  }
+  
+  .links-grid {
+    gap: 20px;
+  }
 }
