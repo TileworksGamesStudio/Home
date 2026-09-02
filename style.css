@@ -1,0 +1,62 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  /* 'fixed' keeps the background locked in place while the grid scrolls over it */
+  background: url('background.svg') no-repeat center center fixed;
+  background-size: cover;
+  font-family: system-ui, -apple-system, sans-serif;
+  display: flex;
+  justify-content: center;
+}
+
+/* Wrapper controls side borders and top spacing */
+.menu-wrapper {
+  width: 92%;           /* Takes up 92% of screen width (leaves 4% border on left & right) */
+  max-width: 500px;     /* Stops grid from getting too wide on large desktop screens */
+  padding-top: 140px;   /* Top offset space for header artwork/title */
+  padding-bottom: 50px; /* Bottom margin when fully scrolled */
+}
+
+/* Optional header area for text or logo overlays */
+.header-space {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* 2-Column Mobile Grid */
+.links-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Always exactly 2 columns */
+  gap: 16px;                             /* Space between the buttons */
+  width: 100%;
+  margin-top: 200px;
+}
+
+/* 1:1 Square Button Styling */
+.menu-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 1 / 1;      /* Forces a perfect 1:1 square ratio */
+  width: 100%;
+  border-radius: 16px;      /* Optional rounded corners */
+  transition: transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent; /* Removes mobile tap blue box */
+}
+
+/* Touch feedback for mobile tap */
+.menu-link:active {
+  transform: scale(0.95);   /* Slight push-down animation when tapped */
+}
+
+.menu-link img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;      /* Ensures SVG content fits neatly inside the 1:1 square */
+  display: block;
+}
