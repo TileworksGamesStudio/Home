@@ -42,7 +42,7 @@ body {
   color: var(--text-main);
   background: 
     radial-gradient(circle at 50% 15%, rgba(28, 75, 83, 0.85) 0%, rgba(11, 31, 35, 0.98) 75%),
-    url('background.svg') no-repeat center center fixed;
+    url('background.png') no-repeat center center fixed;
   background-size: cover;
   display: flex;
   justify-content: center;
