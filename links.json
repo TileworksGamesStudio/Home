@@ -1,18 +1,18 @@
 [
   {
-    "image": "chess.png",
+    "image": "chess.svg",
     "url": "https://tileworksgamesstudio.github.io/Chess/"
   },
   {
-    "image": "battleships.png",
+    "image": "battleships.svg",
     "url": "https://example.com/item-two"
   },
   {
-    "image": "pairs.png",
+    "image": "pairs.svg",
     "url": "https://example.com/item-three"
   },
   {
-    "image": "TRIVIA.png",
+    "image": "TRIVIA.svg",
     "url": "https://example.com/item-four"
   }
 ]
