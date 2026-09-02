@@ -1,22 +1,76 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Menu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#12353a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Tileworks Studio</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
+  <!-- Ambient Dynamic Lighting Canvas -->
+  <div class="ambient-glow" aria-hidden="true">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+  </div>
+
+  <!-- Audio Control Floating Bar -->
+  <aside class="audio-controller" id="audio-controller" title="Toggle Sound">
+    <button class="audio-btn" id="audio-toggle-btn" aria-label="Toggle Background Music">
+      <div class="equalizer-bars" id="equalizer">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </div>
+      <span class="audio-label" id="audio-status">Sound: OFF</span>
+    </button>
+  </aside>
+
+  <!-- Main Content Container -->
   <main class="menu-wrapper">
-    <!-- Reserved space at top. You can put an <img> logo or <h1> title here -->
-    <header class="header-space">
-      <!-- <img src="logo.svg" alt="Header Logo" style="max-width: 80%;"> -->
+    
+    <!-- Active Interactive Center Logo -->
+    <header class="header-section">
+      <a href="https://tileworksgamesstudio.github.io/" class="logo-link interactive-element" id="main-logo" title="Visit Tileworks Studio Home">
+        <div class="logo-backdrop-glow"></div>
+        <div class="logo-frame">
+          <img src="logo.svg" alt="Tileworks Studio Logo" class="logo-img" id="logo-img" onerror="this.src='background.svg'">
+          <div class="logo-shine-layer"></div>
+        </div>
+      </a>
+      <h1 class="studio-title">TILEWORKS STUDIO</h1>
+      <p class="studio-subtitle">GAMES & EXPERIENCES</p>
     </header>
 
-    <!-- 2-Column Grid -->
-    <div id="links-grid" class="links-grid"></div>
+    <!-- 2-Column Responsive Links Grid -->
+    <section class="links-section">
+      <div id="links-grid" class="links-grid" role="list">
+        <!-- Dynamic Link Tiles Rendered via JavaScript -->
+        <div class="tile-skeleton"></div>
+        <div class="tile-skeleton"></div>
+      </div>
+    </section>
+
+    <footer class="footer-space">
+      <p class="copyright">© <span id="current-year"></span> Tileworks Studio. All rights reserved.</p>
+    </footer>
   </main>
+
+  <!-- Background Music Audio Element (Looks for audio.mp3, bgm.mp3, or music.mp3 in root) -->
+  <audio id="bg-audio" preload="auto" loop>
+    <source src="audio.mp3" type="audio/mpeg">
+    <source src="bgm.mp3" type="audio/mpeg">
+    <source src="music.mp3" type="audio/mpeg">
+    <source src="audio.ogg" type="audio/ogg">
+  </audio>
 
   <script src="script.js"></script>
 </body>
