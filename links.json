@@ -1,18 +1,30 @@
 [
   {
+    "title": "Chess",
     "image": "chess.svg",
+    "category": "strategy",
+    "badge": "CLASSIC",
     "url": "https://tileworksgamesstudio.github.io/Chess/"
   },
   {
+    "title": "Battleships",
     "image": "battleships.svg",
+    "category": "strategy",
+    "badge": "HOT",
     "url": "https://tileworksgamesstudio.github.io/Battleships/"
   },
   {
+    "title": "Pairs",
     "image": "pairs.svg",
+    "category": "casual",
+    "badge": "MEMORY",
     "url": "https://tileworksgamesstudio.github.io/Pairs/"
   },
   {
+    "title": "Trivia",
     "image": "TRIVIA.svg",
+    "category": "casual",
+    "badge": "QUIZ",
     "url": "https://tileworksgamesstudio.github.io/Trivia/"
   }
 ]
