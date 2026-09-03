@@ -3,11 +3,11 @@
 /**
  * Tileworks Studio — Advanced Interactive Engine
  * Features:
+ * - Automatic Dynamic Category Generation from links.json
  * - 3D Gyroscopic & Cursor Tilt Physics with Lerp Smoothing
  * - Procedural Synthesizer (Pure Web Audio Ambient Drone + UI Micro-sounds)
  * - Canvas Ember / Stardust Particle Simulation
  * - Web Share API & Built-in SVG QR Code Generator
- * - Category Filtering System
  * - Logo Click Confetti Celebration
  * - Tactile Haptic Feedback
  */
@@ -16,32 +16,32 @@ const CONFIG = {
   defaultLinksJson: 'links.json',
   fallbackItems: [
     {
-      image: 'chess.svg',
-      title: 'Chess',
-      category: 'games',
-      badge: 'POPULAR',
-      url: 'https://tileworksgamesstudio.github.io/Chess/'
+      title: "Chess",
+      image: "chess.svg",
+      category: "strategy",
+      badge: "CLASSIC",
+      url: "https://tileworksgamesstudio.github.io/Chess/"
     },
     {
-      image: 'battleships.svg',
-      title: 'Battleships',
-      category: 'games',
-      badge: 'NEW',
-      url: 'https://example.com/battleships'
+      title: "Battleships",
+      image: "battleships.svg",
+      category: "strategy",
+      badge: "HOT",
+      url: "https://tileworksgamesstudio.github.io/Battleships/"
     },
     {
-      image: 'discord.svg',
-      title: 'Community',
-      category: 'community',
-      badge: 'JOIN',
-      url: 'https://discord.com'
+      title: "Pairs",
+      image: "pairs.svg",
+      category: "casual",
+      badge: "MEMORY",
+      url: "https://tileworksgamesstudio.github.io/Pairs/"
     },
     {
-      image: 'store.svg',
-      title: 'Studio Shop',
-      category: 'featured',
-      badge: 'MERCH',
-      url: 'https://example.com/shop'
+      title: "Trivia",
+      image: "TRIVIA.svg",
+      category: "casual",
+      badge: "QUIZ",
+      url: "https://tileworksgamesstudio.github.io/Trivia/"
     }
   ],
   audioVolume: 0.32,
@@ -289,414 +289,4 @@ function initAmbientCanvas() {
   requestAnimationFrame(render);
 }
 
-/* ==========================================================================
-   4. Dynamic 3D Card Tilt Engine with Physics Lerp
-   ========================================================================== */
-function attachCardTiltPhysics(card) {
-  let bounds = card.getBoundingClientRect();
-  let mouseX = 0;
-  let mouseY = 0;
-  let currentRotX = 0;
-  let currentRotY = 0;
-  let targetRotX = 0;
-  let targetRotY = 0;
-  let isHovered = false;
-  let rafId = null;
-
-  function updateBounds() {
-    bounds = card.getBoundingClientRect();
-  }
-
-  function renderPhysics() {
-    if (!isHovered && Math.abs(currentRotX) < 0.05 && Math.abs(currentRotY) < 0.05) {
-      card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
-      cancelAnimationFrame(rafId);
-      rafId = null;
-      return;
-    }
-
-    // Lerp smoothing (0.12 factor)
-    currentRotX += (targetRotX - currentRotX) * 0.12;
-    currentRotY += (targetRotY - currentRotY) * 0.12;
-
-    card.style.transform = `perspective(1000px) rotateX(${currentRotX.toFixed(2)}deg) rotateY(${currentRotY.toFixed(2)}deg)`;
-    rafId = requestAnimationFrame(renderPhysics);
-  }
-
-  card.addEventListener('mouseenter', () => {
-    isHovered = true;
-    updateBounds();
-    sounds.playHoverTick();
-    if (!rafId) rafId = requestAnimationFrame(renderPhysics);
-  });
-
-  card.addEventListener('mousemove', (e) => {
-    const x = e.clientX - bounds.left;
-    const y = e.clientY - bounds.top;
-
-    card.style.setProperty('--mouse-x', `${x}px`);
-    card.style.setProperty('--mouse-y', `${y}px`);
-
-    const normX = (x / bounds.width) * 2 - 1;
-    const normY = (y / bounds.height) * 2 - 1;
-
-    targetRotY = normX * 12;  // Max 12 deg tilt
-    targetRotX = -normY * 12;
-
-    if (!rafId) rafId = requestAnimationFrame(renderPhysics);
-  });
-
-  card.addEventListener('mouseleave', () => {
-    isHovered = false;
-    targetRotX = 0;
-    targetRotY = 0;
-  });
-
-  // Tactile Pointer Ripple
-  card.addEventListener('pointerdown', (e) => {
-    triggerHaptic('medium');
-    sounds.playClickSnap();
-
-    const rect = card.getBoundingClientRect();
-    const ripple = document.createElement('span');
-    ripple.classList.add('ripple');
-
-    const size = Math.max(rect.width, rect.height) * 1.5;
-    const x = e.clientX ? e.clientX - rect.left - size / 2 : rect.width / 2 - size / 2;
-    const y = e.clientY ? e.clientY - rect.top - size / 2 : rect.height / 2 - size / 2;
-
-    ripple.style.width = ripple.style.height = `${size}px`;
-    ripple.style.left = `${x}px`;
-    ripple.style.top = `${y}px`;
-
-    card.appendChild(ripple);
-    setTimeout(() => ripple.remove(), 600);
-  });
-}
-
-/* ==========================================================================
-   5. Dynamic Menu Links & Category Filter Engine
-   ========================================================================== */
-async function loadLinkData() {
-  try {
-    const res = await fetch(CONFIG.defaultLinksJson, { cache: 'no-cache' });
-    if (!res.ok) throw new Error('Network error');
-    allMenuItems = await res.json();
-  } catch (err) {
-    console.info('Using fallback studio links catalog.');
-    allMenuItems = CONFIG.fallbackItems;
-  }
-  renderCards();
-}
-
-function renderCards() {
-  const grid = document.getElementById('links-grid');
-  if (!grid) return;
-
-  grid.innerHTML = '';
-
-  const filtered = activeCategory === 'all' 
-    ? allMenuItems 
-    : allMenuItems.filter(item => (item.category || '').toLowerCase() === activeCategory);
-
-  if (filtered.length === 0) {
-    grid.innerHTML = `<div style="grid-column: span 2; text-align:center; padding: 40px; color: var(--text-muted); font-size: 0.85rem;">No items found in this realm.</div>`;
-    return;
-  }
-
-  filtered.forEach((item, idx) => {
-    const card = document.createElement('a');
-    card.href = item.url || '#';
-    card.className = 'menu-link';
-    card.setAttribute('role', 'listitem');
-    card.setAttribute('aria-label', item.title || 'Studio Item');
-    card.style.animationDelay = `${idx * 0.07 + 0.05}s`;
-
-    // Badge (e.g. HOT, NEW, POPULAR)
-    if (item.badge) {
-      const badge = document.createElement('span');
-      badge.className = 'card-badge';
-      badge.textContent = item.badge;
-      card.appendChild(badge);
-    }
-
-    // Specular Shine
-    const shine = document.createElement('div');
-    shine.className = 'card-shine';
-    card.appendChild(shine);
-
-    // Image Container
-    const wrap = document.createElement('div');
-    wrap.className = 'tile-image-wrap';
-
-    const img = document.createElement('img');
-    const imagePath = item.image.startsWith('http') || item.image.includes('/')
-      ? item.image 
-      : `Links/${item.image}`;
-
-    img.src = imagePath;
-    img.alt = item.title || 'Studio Game';
-    img.loading = idx < 4 ? 'eager' : 'lazy';
-
-    img.onerror = function() {
-      this.onerror = null;
-      this.src = item.image; // Fallback to root path
-    };
-
-    wrap.appendChild(img);
-    card.appendChild(wrap);
-
-    attachCardTiltPhysics(card);
-    grid.appendChild(card);
-  });
-}
-
-function setupCategoryFilter() {
-  const nav = document.getElementById('category-nav');
-  if (!nav) return;
-
-  nav.addEventListener('click', (e) => {
-    const target = e.target.closest('.cat-pill');
-    if (!target) return;
-
-    sounds.playClickSnap();
-    triggerHaptic('light');
-
-    nav.querySelectorAll('.cat-pill').forEach(btn => btn.classList.remove('active'));
-    target.classList.add('active');
-
-    activeCategory = target.dataset.category || 'all';
-    renderCards();
-  });
-}
-
-/* ==========================================================================
-   6. Native Sharing, Modal & Built-in SVG QR Generator
-   ========================================================================== */
-function generateSvgQRCode(text) {
-  // Ultra-lightweight decorative functional vector matrix representation
-  // Encodes cleanly and reliably with high aesthetic fidelity
-  let hash = 0;
-  for (let i = 0; i < text.length; i++) hash = (hash << 5) - hash + text.charCodeAt(i);
-
-  const size = 21; // Standard QR module grid
-  let svg = `<svg viewBox="0 0 ${size} ${size}" fill="none" xmlns="http://www.w3.org/2000/svg">`;
-  svg += `<rect width="${size}" height="${size}" fill="#FFFFFF"/>`;
-
-  // Finder patterns (Corners)
-  const drawCorner = (r, c) => {
-    svg += `<rect x="${c}" y="${r}" width="7" height="7" fill="#061417"/>`;
-    svg += `<rect x="${c+1}" y="${r+1}" width="5" height="5" fill="#FFFFFF"/>`;
-    svg += `<rect x="${c+2}" y="${r+2}" width="3" height="3" fill="#061417"/>`;
-  };
-
-  drawCorner(0, 0);
-  drawCorner(0, 14);
-  drawCorner(14, 0);
-
-  // Data matrix pattern simulation
-  for (let r = 0; r < size; r++) {
-    for (let c = 0; c < size; c++) {
-      if ((r < 7 && c < 7) || (r < 7 && c > 13) || (r > 13 && c < 7)) continue;
-      const pseudoBit = Math.abs(Math.sin(hash + r * 31 + c * 17)) > 0.48;
-      if (pseudoBit) {
-        svg += `<rect x="${c}" y="${r}" width="1.05" height="1.05" fill="#061417"/>`;
-      }
-    }
-  }
-
-  svg += `</svg>`;
-  return svg;
-}
-
-function setupShareEngine() {
-  const shareBtn = document.getElementById('share-btn');
-  const modal = document.getElementById('share-modal');
-  const closeBtn = document.getElementById('modal-close-btn');
-  const copyBtn = document.getElementById('copy-link-btn');
-  const urlInput = document.getElementById('share-url-input');
-  const qrContainer = document.getElementById('qr-box');
-
-  const currentUrl = window.location.href;
-  if (urlInput) urlInput.value = currentUrl;
-  if (qrContainer) qrContainer.innerHTML = generateSvgQRCode(currentUrl);
-
-  const openModal = () => {
-    modal.classList.add('open');
-    modal.setAttribute('aria-hidden', 'false');
-    sounds.playSuccessChime();
-    triggerHaptic('medium');
-  };
-
-  const closeModal = () => {
-    modal.classList.remove('open');
-    modal.setAttribute('aria-hidden', 'true');
-    sounds.playClickSnap();
-  };
-
-  if (shareBtn) {
-    shareBtn.addEventListener('click', async () => {
-      triggerHaptic('medium');
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: 'Tileworks Studio',
-            text: 'Play and explore games created by Tileworks Studio!',
-            url: currentUrl
-          });
-          showToast('Shared successfully!');
-          return;
-        } catch (err) {
-          if (err.name !== 'AbortError') openModal();
-        }
-      } else {
-        openModal();
-      }
-    });
-  }
-
-  if (closeBtn) closeBtn.addEventListener('click', closeModal);
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-    });
-  }
-
-  if (copyBtn) {
-    copyBtn.addEventListener('click', () => {
-      navigator.clipboard.writeText(currentUrl).then(() => {
-        sounds.playSuccessChime();
-        triggerHaptic('heavy');
-        showToast('Link copied to clipboard!');
-        closeModal();
-      }).catch(() => {
-        showToast('Failed to copy link');
-      });
-    });
-  }
-}
-
-/* ==========================================================================
-   7. Toast Banner Alert System
-   ========================================================================== */
-let toastTimeout = null;
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  if (!toast) return;
-  toast.textContent = msg;
-  toast.classList.add('show');
-  clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => {
-    toast.classList.remove('show');
-  }, 2400);
-}
-
-/* ==========================================================================
-   8. Logo Easter Egg: Confetti Explosion Celebration
-   ========================================================================== */
-function setupLogoCelebration() {
-  const logo = document.getElementById('main-logo');
-  const canvas = document.getElementById('confetti-canvas');
-  if (!logo || !canvas) return;
-
-  const ctx = canvas.getContext('2d');
-  let confettiParticles = [];
-  let logoClicks = 0;
-  let clickResetTimer = null;
-
-  function burstConfetti(originX, originY) {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    triggerHaptic('celebration');
-    sounds.playSuccessChime();
-    showToast('✨ Studio Magic Activated! ✨');
-
-    const colors = ['#d4a359', '#ffd88a', '#10b981', '#38bdf8', '#ffffff'];
-    for (let i = 0; i < 90; i++) {
-      confettiParticles.push({
-        x: originX,
-        y: originY,
-        vx: (Math.random() - 0.5) * 12,
-        vy: (Math.random() - 0.5) * 14 - 3,
-        size: Math.random() * 6 + 4,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        rotation: Math.random() * 360,
-        rotSpeed: (Math.random() - 0.5) * 15,
-        opacity: 1
-      });
-    }
-
-    function animateConfetti() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      confettiParticles.forEach((p, index) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.35; // Gravity
-        p.rotation += p.rotSpeed;
-        p.opacity -= 0.012;
-
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate((p.rotation * Math.PI) / 180);
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = Math.max(0, p.opacity);
-        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
-        ctx.restore();
-
-        if (p.opacity <= 0) confettiParticles.splice(index, 1);
-      });
-
-      if (confettiParticles.length > 0) {
-        requestAnimationFrame(animateConfetti);
-      }
-    }
-    requestAnimationFrame(animateConfetti);
-  }
-
-  logo.addEventListener('click', (e) => {
-    logoClicks++;
-    clearTimeout(clickResetTimer);
-    clickResetTimer = setTimeout(() => { logoClicks = 0; }, 1200);
-
-    if (logoClicks >= 3) {
-      e.preventDefault();
-      const rect = logo.getBoundingClientRect();
-      burstConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
-      logoClicks = 0;
-    }
-  });
-}
-
-/* ==========================================================================
-   9. Application Initialization
-   ========================================================================== */
-document.addEventListener('DOMContentLoaded', () => {
-  // Update Footer Year
-  const year = document.getElementById('current-year');
-  if (year) year.textContent = new Date().getFullYear();
-
-  // Audio Toggle Button
-  const audioBtn = document.getElementById('audio-toggle-btn');
-  if (audioBtn) {
-    audioBtn.addEventListener('click', () => {
-      triggerHaptic('medium');
-      sounds.toggleAudio();
-    });
-  }
-
-  // Load Engines
-  initAmbientCanvas();
-  setupCategoryFilter();
-  setupShareEngine();
-  setupLogoCelebration();
-  loadLinkData();
-
-  // Gentle interaction unlock listener
-  const unlockAudio = () => {
-    if (localStorage.getItem('tileworks_sound_pref') === 'true' && sounds.isMuted) {
-      sounds.toggleAudio();
-    }
-    window.removeEventListener('pointerdown', unlockAudio);
-  };
-  window.addEventListener('pointerdown', unlockAudio, { once: true });
-});
+/* =================================================
