@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,24 +6,37 @@
   <meta name="theme-color" content="#061417">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  
-  <!-- SEO & Social OpenGraph -->
   <title>Tileworks Studio — Games & Experiences</title>
-  <meta name="description" content="Discover premium indie games, experimental prototypes, and interactive experiences crafted by Tileworks Studio.">
-  <meta property="og:title" content="Tileworks Studio — Games & Experiences">
-  <meta property="og:description" content="Enter the realm of Tileworks. Explore our latest games and interactive experiences.">
+
+  <!-- OpenGraph Metadata -->
+  <meta property="og:title" content="Tileworks Studio">
+  <meta property="og:description" content="Play interactive games and experiences crafted by Tileworks Studio.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="logo.png">
-  <meta name="twitter:card" content="summary_large_image">
 
-  <link rel="stylesheet" href="style.css">
+  <!-- Typography: Cinzel & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Immediate Critical Fallback Styling (Prevents any flash of unstyled content) -->
+  <style>
+    html, body {
+      background-color: #061417;
+      color: #fbf8f1;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+    }
+  </style>
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Interactive Background Canvas & Ambient Lighting -->
+  <!-- Ambient Particle Canvas & Visual Glow Orbs -->
   <canvas id="ambient-canvas" class="ambient-canvas" aria-hidden="true"></canvas>
   <div class="ambient-glow" aria-hidden="true">
     <div class="glow-orb orb-1"></div>
@@ -33,16 +45,14 @@
   </div>
 
   <!-- Top Floating HUD -->
-  <div class="hud-top-bar">
-    <!-- Studio Status Chip -->
+  <aside class="hud-top-bar" aria-label="Studio Controls">
     <div class="status-badge" title="Tileworks Studio Status">
       <span class="status-pulse"></span>
       <span class="status-text">LIVE STUDIO</span>
     </div>
 
-    <!-- HUD Controls -->
     <div class="hud-actions">
-      <!-- Share Trigger -->
+      <!-- Native Share Button -->
       <button class="hud-btn" id="share-btn" aria-label="Share Studio Hub" title="Share Hub">
         <svg class="hud-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="18" cy="5" r="3"></circle>
@@ -53,8 +63,8 @@
         </svg>
       </button>
 
-      <!-- Audio Controller -->
-      <button class="hud-btn audio-btn" id="audio-toggle-btn" aria-label="Toggle Sound Experience" title="Toggle Sound">
+      <!-- Audio Equalizer Controller -->
+      <button class="hud-btn audio-btn" id="audio-toggle-btn" aria-label="Toggle Sound" title="Toggle Sound">
         <div class="equalizer-bars" id="equalizer">
           <span class="bar"></span>
           <span class="bar"></span>
@@ -64,19 +74,19 @@
         <span class="audio-label" id="audio-status">Sound</span>
       </button>
     </div>
-  </div>
+  </aside>
 
-  <!-- Main Container -->
+  <!-- Main Menu Layout Container -->
   <main class="menu-wrapper">
     
-    <!-- Hero / Header Section -->
+    <!-- Hero Header -->
     <header class="header-section">
       <div class="logo-wrapper">
-        <a href="https://tileworksgamesstudio.github.io/" class="logo-link" id="main-logo" aria-label="Tileworks Studio Home">
+        <a href="https://tileworksgamesstudio.github.io/" class="logo-link" id="main-logo" title="Tileworks Studio Home">
           <div class="logo-backdrop-glow"></div>
           <div class="logo-ring-pulse"></div>
           <div class="logo-frame">
-            <img src="logo.png" alt="Tileworks Studio Logo" class="logo-img" id="logo-img" onerror="this.src='background.svg'">
+            <img src="logo.png" alt="Tileworks Studio Logo" class="logo-img" id="logo-img" onerror="this.onerror=null; this.src='background.svg';">
             <div class="logo-shine-layer"></div>
           </div>
         </a>
@@ -85,19 +95,14 @@
       <h1 class="studio-title">TILEWORKS STUDIO</h1>
       <p class="studio-subtitle">Games & Interactive Worlds</p>
 
-      <!-- Category Filter Pills -->
-      <nav class="category-nav" aria-label="Link categories" id="category-nav">
-        <button class="cat-pill active" data-category="all">All</button>
-        <button class="cat-pill" data-category="games">Games</button>
-        <button class="cat-pill" data-category="featured">Featured</button>
-        <button class="cat-pill" data-category="community">Community</button>
-      </nav>
+      <!-- Category Filter Pills (Dynamically generated by script.js) -->
+      <nav class="category-nav" aria-label="Link categories" id="category-nav"></nav>
     </header>
 
-    <!-- 2-Column Responsive Dynamic Grid -->
-    <section class="links-section" aria-label="Games and Links">
+    <!-- 2-Column Responsive Games Grid -->
+    <section class="links-section" aria-label="Games Catalog">
       <div id="links-grid" class="links-grid" role="list">
-        <!-- Skeleton Loaders -->
+        <!-- Rendered instantly via script.js -->
         <div class="tile-skeleton"></div>
         <div class="tile-skeleton"></div>
         <div class="tile-skeleton"></div>
@@ -113,40 +118,36 @@
     </footer>
   </main>
 
-  <!-- Share Modal Modal / Sheet -->
+  <!-- Share Sheet Modal with Pure SVG QR Generator -->
   <div class="modal-overlay" id="share-modal" aria-hidden="true">
     <div class="modal-card">
-      <button class="modal-close" id="modal-close-btn" aria-label="Close Share Modal">✕</button>
+      <button class="modal-close" id="modal-close-btn" aria-label="Close Modal">✕</button>
       <h3 class="modal-title">Share Tileworks Studio</h3>
       <p class="modal-subtitle">Scan QR code or copy the link below</p>
       
-      <div class="qr-box" id="qr-box">
-        <!-- Dynamic Generated SVG QR Code -->
-      </div>
+      <div class="qr-box" id="qr-box"></div>
 
       <div class="share-copy-box">
         <input type="text" readonly id="share-url-input" class="share-input">
-        <button class="share-copy-btn" id="copy-link-btn">
-          <span>Copy</span>
-        </button>
+        <button class="share-copy-btn" id="copy-link-btn">Copy</button>
       </div>
     </div>
   </div>
 
-  <!-- Toast Notification Bar -->
+  <!-- Toast Notification Alert Banner -->
   <div class="toast" id="toast" role="alert" aria-live="polite"></div>
 
-  <!-- Confetti Canvas for Easter Eggs -->
+  <!-- Confetti Canvas for Logo Easter Egg -->
   <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
 
-  <!-- Audio Element Fallback (Looks for audio.mp3, bgm.mp3, etc.) -->
+  <!-- Background Music Audio Elements -->
   <audio id="bg-audio" preload="auto" loop>
     <source src="audio.mp3" type="audio/mpeg">
     <source src="bgm.mp3" type="audio/mpeg">
     <source src="music.mp3" type="audio/mpeg">
-    <source src="audio.ogg" type="audio/ogg">
   </audio>
 
-  <script src="script.js"></script>
+  <!-- Main Engine Script -->
+  <script src="script.js" defer></script>
 </body>
 </html>
